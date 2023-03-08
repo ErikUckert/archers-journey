@@ -19,20 +19,37 @@ class Game {
   }
 
   start() {
-    // Define the start method, which initializes the game
-    // and sets up any necessary event listeners
+    /**
+     * Initializes the game and sets up any necessary event listeners.
+     * Gets the canvas element and its context, sets its dimensions to match the viewport.
+     * Creates a new player object at the center of the canvas.
+     * Binds touch event listeners to their respective handler methods.
+     * Requests the first animation frame to start the game loop.
+     */
     this.canvas = document.getElementById("game-canvas");
     this.ctx = this.canvas.getContext("2d");
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
     this.player = new Player(this.canvas.width / 2, this.canvas.height / 2);
-    this.canvas.addEventListener("touchstart", this.handleTouchStart.bind(this));
+    this.canvas.addEventListener(
+      "touchstart",
+      this.handleTouchStart.bind(this)
+    );
     this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this));
     this.canvas.addEventListener("touchmove", this.handleTouchMove.bind(this));
     requestAnimationFrame(this.gameLoop.bind(this));
   }
 
   handleTouchStart(event) {
+    /**
+     * Handles the 'touchstart' event when the user touches the screen.
+     * Prevents the default behavior to avoid unwanted scrolling or zooming.
+     * Records the time the touch event started in milliseconds.
+     * Calculates the touch coordinates relative to the canvas element.
+     *
+     * @param {TouchEvent} event - The touch event object.
+     */
+
     event.preventDefault();
     this.tapStart = new Date().getTime();
 
@@ -42,6 +59,16 @@ class Game {
   }
 
   handleTouchEnd(event) {
+    /**
+     * Handles the 'touchend' event when the user stops touching the screen.
+     * Prevents the default behavior to avoid unwanted scrolling or zooming.
+     * Calculates the time elapsed between touch start and end in milliseconds.
+     * If the touch duration is less than 200ms, sets the 'isMoving' flag to true and
+     * records the target coordinates of the touch relative to the canvas element.
+     * Resets the 'isHolding' flag to false.
+     *
+     * @param {TouchEvent} event - The touch event object.
+     */
     event.preventDefault();
     const tapEnd = new Date().getTime();
     if (tapEnd - this.tapStart < 200) {
@@ -55,6 +82,15 @@ class Game {
   }
 
   handleTouchMove(event) {
+    /**
+     * Handles the 'touchmove' event when the user moves their finger on the screen.
+     * Prevents the default behavior to avoid unwanted scrolling or zooming.
+     * Calculates the time elapsed between touch start and current position in milliseconds.
+     * Calculates the touch coordinates relative to the canvas element.
+     * If the touch duration is greater than or equal to 200ms, sets the 'isHolding' flag to true.
+     *
+     * @param {TouchEvent} event - The touch event object.
+     */
     event.preventDefault();
     const tapEnd = new Date().getTime();
     // Get the touch coordinates relative to the canvas
@@ -65,9 +101,20 @@ class Game {
     }
   }
 
+  /**
+   * Updates the game state based on user input or other factors.
+   * Calculates the player's movement based on the touch input.
+   * Calculates the start and end points of a moving line based on touch input and player position.
+   */
   update() {
-    // Define the update method, which updates the game state
-    // based on user input or other factors
+    this.updatePlayerMovement();
+    this.updateMovingLine();
+  }
+
+  /**
+   * Updates the player's movement based on touch input.
+   */
+  updatePlayerMovement() {
     if (this.isMoving && this.moveTarget) {
       const dx = this.moveTarget.x - this.player.x;
       const dy = this.moveTarget.y - this.player.y;
@@ -79,29 +126,56 @@ class Game {
         this.moveTarget = null;
       }
     }
-    // Calculate the moving line
-    if (
-      this.isHolding
-    ) {
-      this.startX = this.touchX;
-      this.startY = this.touchY;
-      this.endX = this.player.x;
-      this.endY = this.player.y;
-      this.lineLength = Math.sqrt(
-        Math.pow(this.endX - this.startX, 2) +
-          Math.pow(this.endY - this.startY, 2)
-      );
-      this.speed = this.lineLength * 0.0005;
+  }
+
+  /**
+   * Updates the start and end points of a moving line based on touch input and player position.
+   */
+  updateMovingLine() {
+    if (this.isHolding) {
+      this.calculateMovingLineStartAndEndPoints();
+      this.calculateMovingLineSpeed();
     }
 
-    // Calculate the angle between the start and end points
-    var angle = Math.atan2(this.endY - this.startY, this.endX - this.startX);
+    this.calculateMovingLineEndPoint();
+    this.calculateMovingLineStartPoint();
+  }
 
-    // Calculate the new end point coordinates based on the line length
+  /**
+   * Calculates the start and end points of the moving line based on touch input and player position.
+   */
+  calculateMovingLineStartAndEndPoints() {
+    this.startX = this.touchX;
+    this.startY = this.touchY;
+    this.endX = this.player.x;
+    this.endY = this.player.y;
+    this.lineLength = Math.sqrt(
+      Math.pow(this.endX - this.startX, 2) +
+        Math.pow(this.endY - this.startY, 2)
+    );
+  }
+
+  /**
+   * Calculates the speed of the moving line based on its length.
+   */
+  calculateMovingLineSpeed() {
+    this.speed = this.lineLength * 0.0005;
+  }
+
+  /**
+   * Calculates the end point of the moving line based on its angle and length.
+   */
+  calculateMovingLineEndPoint() {
+    var angle = Math.atan2(this.endY - this.startY, this.endX - this.startX);
     this.endX = this.startX + this.lineLength * Math.cos(angle);
     this.endY = this.startY + this.lineLength * Math.sin(angle);
+  }
 
-    // Calculate the new start point coordinates based on moving in the direction of the line
+  /**
+   * Calculates the start point of the moving line based on its angle and speed.
+   */
+  calculateMovingLineStartPoint() {
+    var angle = Math.atan2(this.endY - this.startY, this.endX - this.startX);
     this.startX += this.speed * this.lineLength * Math.cos(angle);
     this.startY += this.speed * this.lineLength * Math.sin(angle);
   }
