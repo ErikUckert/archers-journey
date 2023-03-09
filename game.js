@@ -37,8 +37,8 @@ class Game {
    * Calculates the start and end points of a moving line based on touch input and player position.
    */
   update() {
-    this.updatePlayerMovement();
     this.updateMovingLine();
+    this.updatePlayerMovement();
   }
 
   /**
@@ -49,8 +49,14 @@ class Game {
       const dx = this.moveTarget.x - this.player.x;
       const dy = this.moveTarget.y - this.player.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > 10) {
+      if (dist > 10 && !this.isHolding) {
         this.player.move(dx / this.movementSpeed, dy / this.movementSpeed);
+        this.geometry.angle = this.geometry.calculateAngel(
+          this.player.x,
+          this.player.y,
+          this.moveTarget.x,
+          this.moveTarget.y
+        );
       } else {
         this.isMoving = false;
         this.moveTarget = null;
@@ -81,8 +87,26 @@ class Game {
     this.ctx.beginPath();
     this.ctx.arc(this.player.x, this.player.y, 10, 0, 2 * Math.PI);
     this.ctx.fill();
+    this.ctx.save();
+    this.ctx.translate(this.player.x, this.player.y);
+    this.ctx.rotate(this.geometry.angle + Math.PI / 4);
+    this.ctx.drawImage(this.player.image, -32, -32, 64, 64);
+    this.ctx.restore();
 
     // Draw the moving line
+    // using a gradient to visualize a powered up arrow
+    this.ctx.lineCap = "round";
+    if (this.geometry.lineLength > 100) {
+      var gradient = this.ctx.createLinearGradient(this.geometry.startX, this.geometry.startY, this.geometry.endX, this.geometry.endY);
+      gradient.addColorStop("0", "magenta");
+      gradient.addColorStop("0.5", "blue");
+      gradient.addColorStop("1.0", "red");
+      this.ctx.strokeStyle = gradient;
+      this.ctx.lineWidth = 10;
+    } else {
+      this.ctx.strokeStyle = "black";
+      this.ctx.lineWidth = 1;
+    }
     this.ctx.beginPath();
     this.ctx.moveTo(this.geometry.startX, this.geometry.startY);
     this.ctx.lineTo(this.geometry.endX, this.geometry.endY);
@@ -90,8 +114,8 @@ class Game {
   }
 
   gameLoop = () => {
-    this.update();
     this.render();
+    this.update();
     requestAnimationFrame(this.gameLoop);
   };
 }

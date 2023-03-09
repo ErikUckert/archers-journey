@@ -4,6 +4,7 @@ class Player {
       // Define instance variables for the player state
       this.x = x;
       this.y = y;
+      this.image = document.getElementById('bow');
     }
   
     move(dx, dy) {
