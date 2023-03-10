@@ -5,7 +5,7 @@ It aims for mobile screens with touch control in mind.
 ![Preview image of a pixelart bow](./src/LightBowPreview.png)
 
 ## How to play
-Just visit [the playground](https://archersjourney.w3spaces-preview.com/) or clone the repository to your local harddrive with:
+Just visit [the playground](https://archersjourney.w3spaces.com/) or clone the repository to your local harddrive with:
 
 ```
 git clone https://github.com/ErikUckert/archers-journey.git
