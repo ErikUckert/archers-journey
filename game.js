@@ -16,7 +16,7 @@ class Game {
     this.ctx = this.canvas.getContext("2d");
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.player = new Player(this.canvas.width / 2, this.canvas.height / 2);
+    this.player = new Player(this.canvas.width / 2, this.canvas.height / 2, document.getElementById("bow"));
     this.touchHandler = new TouchHandler(this);
     this.geometry = new Geometry(this, this.player, this.touchHandler);
     this.canvas.addEventListener(
@@ -96,7 +96,7 @@ class Game {
     // Draw the moving line
     // using a gradient to visualize a powered up arrow
     this.ctx.lineCap = "round";
-    if (this.geometry.lineLength > 100) {
+    if (this.geometry.lineLength > 150) {
       var gradient = this.ctx.createLinearGradient(this.geometry.startX, this.geometry.startY, this.geometry.endX, this.geometry.endY);
       gradient.addColorStop("0", "magenta");
       gradient.addColorStop("0.5", "blue");

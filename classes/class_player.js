@@ -1,10 +1,10 @@
 // Define the Player class
 class Player {
-    constructor(x, y) {
+    constructor(x, y, image) {
       // Define instance variables for the player state
       this.x = x;
       this.y = y;
-      this.image = document.getElementById('bow');
+      this.image = image;
     }
   
     move(dx, dy) {
