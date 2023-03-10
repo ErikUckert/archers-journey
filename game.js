@@ -84,13 +84,25 @@ class Game {
     this.ctx.fillStyle = "#888";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = "#fff";
-    this.ctx.beginPath();
-    this.ctx.arc(this.player.x, this.player.y, 10, 0, 2 * Math.PI);
-    this.ctx.fill();
     this.ctx.save();
     this.ctx.translate(this.player.x, this.player.y);
-    this.ctx.rotate(this.geometry.angle + Math.PI / 4);
-    this.ctx.drawImage(this.player.image, -32, -32, 64, 64);
+    this.ctx.rotate(this.geometry.angle + Math.PI * 3/4);
+    let spriteMapX = [0, 52, 104, 156, 208];
+    let spriteX = 0;
+    if (this.geometry.lineLength > 30 && this.geometry.lineLength < 52) {
+      spriteX = spriteMapX[1];
+    };
+    if (this.geometry.lineLength > 52 && this.geometry.lineLength < 104) {
+      spriteX = spriteMapX[2];
+    };
+    if (this.geometry.lineLength > 104 && this.geometry.lineLength < 156) {
+      spriteX = spriteMapX[3];
+    };
+    if (this.geometry.lineLength > 156 && this.isHolding) {
+      spriteX = spriteMapX[4];
+    };
+    this.ctx.drawImage(this.player.image, spriteX, 0, 52, 52, -26, -26, 52, 52);
+    // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
     this.ctx.restore();
 
     // Draw the moving line
